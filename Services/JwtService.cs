@@ -8,6 +8,10 @@ using Microsoft.Extensions.Configuration;
 
 using Domain.Interfaces.Services;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Services
 {
@@ -15,6 +19,8 @@ namespace Services
     {
         private readonly IConfiguration _configuration;
         private SymmetricSecurityKey symmetricSecurityKey;
+        private string _jwtToken;
+        private ClaimsPrincipal _claims;
 
         public JwtService(IConfiguration configuration)
         {
@@ -47,6 +53,51 @@ namespace Services
                 hours = 8;
 
             return DateTime.UtcNow.AddHours(hours);
+        }
+
+        public bool Validate(HttpRequest request)
+        {
+            request.Headers.TryGetValue("Authorization", out StringValues authorization);
+            if (!authorization.Any())
+            {
+                return false;
+            }
+
+            var token = authorization
+                .Where(c => c.StartsWith("Bearer "))
+                .FirstOrDefault();
+            if (string.IsNullOrEmpty(token))
+            {
+                return false;
+            }
+            _jwtToken = token["Bearer ".Length..];
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validations = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = GetSecurityKey(),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+            try
+            {
+                _claims = tokenHandler.ValidateToken(_jwtToken, validations, out var tokenSecure);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public string ReadToken(string key)
+        {
+            var value = _claims.Claims
+                .Where(c=> Object.Equals(c.Type, key))
+                .Select(c => c.Value)
+                .FirstOrDefault();
+            return value;
         }
     }
 }

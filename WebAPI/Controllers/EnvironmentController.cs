@@ -1,5 +1,7 @@
 ﻿using Domain.Entities.Response;
 using Domain.Enums;
+using WebAPI.CustomAuthorization;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace WebAPI.Controllers
 {
@@ -43,6 +46,7 @@ namespace WebAPI.Controllers
 
                 response.Messages.Add($"Application Name: {_env.ApplicationName}");
                 response.Messages.Add($"Environment Name: {_env.EnvironmentName}");
+                response.Messages.Add($"Content Root Path: {_env.ContentRootPath}");
 
                 return Ok(response);
             }
@@ -55,6 +59,13 @@ namespace WebAPI.Controllers
                 };
                 return BadRequest(response);
             }
+        }
+
+        [HttpGet("Custom")]
+        [ProfileAuthorization("teacher,secretary,director")]
+        public ActionResult Custom()
+        {
+            return Ok("Ok");
         }
     }
 }

@@ -18,8 +18,8 @@ namespace CrossCutting.Extensions
         public static IServiceCollection AddInjectionServices(this IServiceCollection services)
         {
             services
-                .AddSingleton<IJwtService, JwtService>()
-                .AddSingleton<ILoginRepository, LoginRepository>()
+                .AddScoped<IJwtService, JwtService>()
+                .AddScoped<ILoginRepository, LoginRepository>()
                 .AddScoped<ILoginService, LoginService>();
 
             return services;

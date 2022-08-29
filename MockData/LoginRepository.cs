@@ -31,7 +31,11 @@ namespace MockData
                 Password = "user#123",
                 FullName = "System User",
                 Email = "user@domain.com",
-                Role = "User"
+                Role = "User",
+                Profiles = new[]
+                {
+                    "teacher"
+                }
             }
         };
 
