@@ -20,7 +20,7 @@ namespace WebAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -34,7 +34,7 @@ namespace WebAPI
             services.AddInjectionServices();
 
             //Setup Jwt Security
-            services.AddSecurityProviders(Configuration);
+            services.AddSecurityProviders();
             services.AddSecurityPolicies(Configuration);
 
             services.AddControllers();

@@ -14,11 +14,12 @@ namespace CrossCutting.Extensions
 {
     public static class SecurityExtension
     {
-        public static IServiceCollection AddSecurityProviders(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddSecurityProviders(this IServiceCollection services)
         {
-            //Reads the Security Key for Signature Encryption
-            //First, try in the Environment, then, in the Settings file
+            //Creates a Service Provider to get Dependency Injections without 'Constructor' parameters
             IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            //Get's the JwtService that handles rules and manages Jwt issues
             IJwtService jwtService = serviceProvider.GetService<IJwtService>();
             
             services.AddAuthentication(x =>

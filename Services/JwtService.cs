@@ -33,7 +33,8 @@ namespace Services
             {
                 var securityKey = Environment.GetEnvironmentVariable("JWT_SECURITY_KEY");
                 if (string.IsNullOrEmpty(securityKey))
-                    securityKey = _configuration["Jwt:SymmetricSecurityKey"];
+                    throw new ArgumentNullException("JWT_SECURITY_KEY", "Security Key Environment variable not defined");
+
                 var key = Encoding.ASCII.GetBytes(securityKey);
                 symmetricSecurityKey = new SymmetricSecurityKey(key);
             }
@@ -50,7 +51,7 @@ namespace Services
                 value = _configuration["Jwt:ExpiresIn"];
 
             if (!int.TryParse(value, out int hours))
-                hours = 8;
+                hours = 1;
 
             return DateTime.UtcNow.AddHours(hours);
         }
